@@ -1,0 +1,64 @@
+<div class="container my-5">
+
+	<!-- Form -->
+	<div class="row my-5">
+		<h2 class="col"> Filter by country : </h2>
+		<%= render 'dropdown' %>
+	</div>
+	<!-- ./Form -->
+
+
+
+	<!-- Card deck -->
+	<h2 class="mb-3">Summary</h2>
+	<div class="card-deck text-center">
+	  <div class="card">
+	    <div class="card-body">
+	      <h5 class="card-title text-uppercase">Revenue</h5>
+	      <p class="card-text"> <%= show_revenue(@order_lines) %> </p>
+	    </div>
+	  </div>
+	  <div class="card">
+	    <div class="card-body">
+	      <h5 class="card-title text-uppercase">Average Revenue / Order</h5>
+	      <p class="card-text"><%= show_average_revenue(@order_lines) %> </p>
+	    </div>
+	  </div>
+	  <div class="card">
+	    <div class="card-body">
+	      <h5 class="card-title text-uppercase">Customers</h5>
+	      <p class="card-text"><%= @order_lines.distinct_customers %></p>
+	    </div>
+	  </div>
+	</div>
+	<!-- ./Card deck -->
+
+	<hr class="my-4">
+
+	<!-- Graph -->
+	<h2 class="mb-3">Revenue per month</h2>
+	<div id="myColumnChart" class="container"></div>
+	<!-- ./Graph -->
+
+</div>
+
+<script>
+	google.charts.load('current', {packages: ['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+      // Define the chart to be drawn.
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Month');
+      data.addColumn('number', 'Revenue per month');
+      data.addRows(JSON.parse('<%= @order_lines.revenue_per_month.to_json.html_safe -%>'));
+      var options = {
+      	title: 'Revenue per month (K€)',
+      	legend: { position: "none" },
+      }
+
+      // Instantiate and draw the chart.
+      var chart = new google.visualization.ColumnChart(document.getElementById('myColumnChart'));
+      chart.draw(data, options);
+    }
+</script>
